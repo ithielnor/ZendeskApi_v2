@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 #endif
 using ZendeskApi_v2.Extensions;
+using ZendeskApi_v2.Models.Requests;
 using ZendeskApi_v2.Models.Shared;
 using ZendeskApi_v2.Models.Tickets;
 using ZendeskApi_v2.Models.Tickets.Suspended;
@@ -15,6 +16,8 @@ namespace ZendeskApi_v2.Requests
     public class Tickets : Core
     {
         private const string _tickets = "tickets";
+        private const string _views = "views";
+        private const string _organizations = "organizations";
 
 
         public Tickets(string yourZendeskUrl, string user, string password)
@@ -28,9 +31,39 @@ namespace ZendeskApi_v2.Requests
             return GenericGet<GroupTicketResponse>(_tickets + ".json");
         }
 
+        public GroupTicketResponse GetTicketsByViewID(int id)
+        {
+            return GenericGet<GroupTicketResponse>(string.Format("{0}/{1}/{2}.json", _views, id, _tickets));
+        }
+
+        public GroupTicketResponse GetTicketsByOrganizationID(long id)
+        {
+            return GenericGet<GroupTicketResponse>(string.Format("{0}/{1}/{2}.json", _organizations, id, _tickets));
+        }
+
+        public GroupTicketResponse GetRecentTickets()
+        {
+            return GenericGet<GroupTicketResponse>("tickets/recent.json");
+        }
+
+        public GroupTicketResponse GetTicketsByUserID(long userId)
+        {
+            return GenericGet<GroupTicketResponse>(string.Format("users/{0}/tickets/requested.json", userId));
+        }
+
+        public GroupTicketResponse GetTicketsWhereUserIsCopied(long userId)
+        {
+            return GenericGet<GroupTicketResponse>(string.Format("users/{0}/tickets/ccd.json", userId));
+        }
+
         public IndividualTicketResponse GetTicket(long id)
         {            
             return GenericGet<IndividualTicketResponse>(string.Format("{0}/{1}.json", _tickets, id));
+        }
+
+        public GroupCommentResponse GetTicketComments(long ticketId)
+        {
+            return GenericGet<GroupCommentResponse>(string.Format("{0}/{1}/comments.json", _tickets, ticketId));
         }
 
         public GroupTicketResponse GetMultipleTickets(List<long> ids)
@@ -199,9 +232,39 @@ namespace ZendeskApi_v2.Requests
             return await GenericGetAsync<GroupTicketResponse>(_tickets + ".json");
         }
 
+        public async Task<GroupTicketResponse> GetTicketsByViewIDAsync(int id)
+        {
+            return await GenericGetAsync<GroupTicketResponse>(string.Format("{0}/{1}/{2}.json", _views, id, _tickets));
+        }
+
+        public async Task<GroupTicketResponse> GetTicketsByOrganizationIDAsync(long id)
+        {
+            return await GenericGetAsync<GroupTicketResponse>(string.Format("{0}/{1}/{2}.json", _organizations, id, _tickets));
+        }
+
+        public async Task<GroupTicketResponse> GetRecentTicketsAsync()
+        {
+            return await GenericGetAsync<GroupTicketResponse>("tickets/recent.json");
+        }
+
+        public async Task<GroupTicketResponse> GetTicketsByUserIDAsync(long userId)
+        {
+            return await GenericGetAsync<GroupTicketResponse>(string.Format("users/{0}/tickets/requested.json", userId));
+        }
+
+        public async Task<GroupTicketResponse> GetTicketsWhereUserIsCopiedAsync(long userId)
+        {
+            return await GenericGetAsync<GroupTicketResponse>(string.Format("users/{0}/tickets/ccd.json", userId));
+        }
+
         public async Task<IndividualTicketResponse> GetTicketAsync(long id)
         {            
             return await GenericGetAsync<IndividualTicketResponse>(string.Format("{0}/{1}.json", _tickets, id));
+        }
+
+        public async Task<GroupCommentResponse> GetTicketCommentsAsync(long ticketId)
+        {
+            return await GenericGetAsync<GroupCommentResponse>(string.Format("{0}/{1}/comments.json", _tickets, ticketId));
         }
 
         public async Task<GroupTicketResponse> GetMultipleTicketsAsync(List<long> ids)

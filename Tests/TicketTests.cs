@@ -27,6 +27,14 @@ namespace Tests
         }
 
         [Test]
+        public void CanCanGetTicketsByOrganizationIDAsync()
+        {
+            var id = Settings.OrganizationId;
+            var tickets = api.Tickets.GetTicketsByOrganizationIDAsync(id);
+            Assert.True(tickets.Result.Count > 0);
+        }
+
+        [Test]
         public void CanCreateUpdateAndDeleteTicketAsync()
         {            
             var ticket = new Ticket()
@@ -68,6 +76,9 @@ namespace Tests
         {
             var tickets = api.Tickets.GetAllTickets();            
             Assert.True(tickets.Count > 0);
+
+            var ticketsByUser = api.Tickets.GetTicketsByUserID(tickets.Tickets[0].RequesterId.Value);
+            Assert.True(ticketsByUser.Count > 0);
         }
 
         [Test]
@@ -77,6 +88,14 @@ namespace Tests
             var ticket = api.Tickets.GetTicket(id).Ticket;
             Assert.NotNull(ticket);
             Assert.AreEqual(ticket.Id, id);
+        }
+
+        [Test]
+        public void CanGetTicketsByOrganizationId()
+        {
+            var id = Settings.OrganizationId;
+            var tickets = api.Tickets.GetTicketsByOrganizationID(id);
+            Assert.True(tickets.Count > 0);
         }
         
         [Test]
@@ -120,12 +139,19 @@ namespace Tests
 
             res.CustomFields[0].Value = "updated";
 
-            var updateResponse = api.Tickets.UpdateTicket(res, new Comment() {Body = body, Public = true});
+            var updateResponse = api.Tickets.UpdateTicket(res, new Comment() {Body = body, Public = true, Uploads = new List<string>()});            
 
             Assert.NotNull(updateResponse);
             Assert.AreEqual(updateResponse.Audit.Events.First().Body, body);
-
+            
             Assert.True(api.Tickets.Delete(res.Id.Value));
+        }
+
+        [Test]
+        public void CanGetTicketComments()
+        {
+            var comments = api.Tickets.GetTicketComments(2);
+            Assert.IsNotEmpty(comments.Comments[1].Body);            
         }
 
         [Test]
